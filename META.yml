@@ -1,0 +1,36 @@
+---
+abstract: 'implementation of the sqltree command'
+author:
+  - 'Mark Lawrence <nomad@null.net>'
+build_requires:
+  Data::Dumper: 0
+  ExtUtils::MakeMaker: 6.36
+  File::Temp: 0
+  Test::Database: 0
+  Test::Fatal: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.36
+distribution_type: module
+dynamic_config: 1
+generated_by: 'Module::Install version 1.06'
+license: gpl_3
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: App-sqltree
+no_index:
+  directory:
+    - inc
+    - share
+    - t
+    - xt
+requires:
+  File::ShareDir: 0
+  IO::Prompt::Tiny: 0
+  OptArgs: 0
+  Path::Tiny: 0
+  Template::Tiny: 0
+resources:
+  repository: git://github.com/mlawren/p5-App-sqltree.git
+version: 0.0.5_1

@@ -1,0 +1,42 @@
+NAME
+    App::sqltree - implementation of the sqltree command
+
+VERSION
+    0.0.5_1 (2013-06-12)
+
+SYNOPSIS
+        # Via OptArgs
+        use OptArgs 'dispatch';
+        dispatch(qw/run App::sqltree/);
+
+        # Or directly
+        use App::sqltree;
+
+        my @sql = App::sqltree::run(
+            {
+                no_print => 1,
+                driver   => 'SQLite',
+                table    => 'items',
+                pk       => 'id',
+                parent   => 'parent_id',
+                type     => 'integer',
+            }
+        );
+
+DESCRIPTION
+    This is the implementation module for the sqltree command.
+
+SEE ALSO
+    OptArgs, sqltree
+
+AUTHOR
+    Mark Lawrence <nomad@null.net>
+
+COPYRIGHT AND LICENSE
+    Copyright (C) 2010,2013 Mark Lawrence <nomad@null.net>
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or (at your
+    option) any later version.
+
