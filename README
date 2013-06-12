@@ -2,7 +2,7 @@ NAME
     App::sqltree - implementation of the sqltree command
 
 VERSION
-    0.0.5_1 (2013-06-12)
+    0.0.5_2 (2013-06-12)
 
 SYNOPSIS
         # Via OptArgs

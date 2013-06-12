@@ -47,6 +47,7 @@ sub check {
         diag $sql;
         diag 'Wanted: ' . Dumper($struct);
         diag 'Got   : ' . Dumper($result);
+        diag 'At    : ' . (caller)[1] . ':' . (caller)[2];
     }
 }
 
@@ -79,6 +80,7 @@ sub check_tree {
         diag "Select: [child,parent,depth]";
         diag 'Wanted: ' . Dumper($struct);
         diag 'Got   : ' . Dumper($result);
+        diag 'At    : ' . (caller)[1] . ':' . (caller)[2];
     }
 }
 
@@ -105,6 +107,7 @@ sub check_path {
         diag "Select: [id,codename,parent,path]";
         diag 'Wanted: ' . Dumper($struct);
         diag 'Got   : ' . Dumper($result);
+        diag 'At    : ' . (caller)[1] . ':' . (caller)[2];
     }
 }
 
@@ -151,8 +154,42 @@ foreach my $handle (@handles) {
         CREATE TABLE $table(
             $opts{pk} $opts{type} primary key,
             $opts{parent} $opts{type} references $table($opts{pk}),
-            codename text
+            codename text,
+            junk text
         );" );
+
+    $dbh->do( "
+        CREATE TABLE t(
+            id $opts{type} PRIMARY KEY,
+            val integer
+        );" );
+
+    if ( $handle->dbd eq 'SQLite' ) {
+        $dbh->do( "
+        CREATE TRIGGER
+            user_ai
+        AFTER INSERT ON
+            $table
+        FOR EACH ROW
+        BEGIN
+            INSERT INTO t(id,val) VALUES(NEW.$opts{pk}, 1);
+        END;" );
+
+        $dbh->do( "
+        CREATE TRIGGER
+            user_au
+        AFTER UPDATE OF
+            junk
+        ON
+            $table
+        FOR EACH ROW
+        BEGIN
+            UPDATE
+                t
+            SET
+                val = val + 1;
+        END;" );
+    }
 
     $dbh->do($_) for App::sqltree::run( \%opts );
 
@@ -162,6 +199,12 @@ foreach my $handle (@handles) {
         [ [ 1, 1, 0 ], ],
         'insert 1'
     );
+
+    check( "
+        SELECT val
+        FROM t
+        WHERE id = ?
+    ", [1], [ [1] ], 'user_ai trigger' );
 
     check_tree(
         "INSERT INTO $table (id, codename) VALUES (?, ?);",
@@ -223,6 +266,23 @@ foreach my $handle (@handles) {
         ],
         'update 1'
     );
+
+    my ($old) = $dbh->selectrow_array( "
+        select
+            val
+        from
+            t
+        where
+            $opts{pk} = 3
+    " );
+
+    $dbh->do("update $table set junk = 'stuff' where $opts{pk} = 3");
+
+    check( "
+        SELECT val
+        FROM t
+        WHERE id = ?
+    ", [3], [ [ $old + 1 ] ], 'user_au trigger ' . ( $old + 1 ) );
 
     # Move some top-level object to become child object:
     check_tree(

@@ -1,4 +1,7 @@
-#!/usr/bin/perl
+#!/opt/perlbrew/perls/perl-5.14.2/bin/perl
+
+eval 'exec /opt/perlbrew/perls/perl-5.14.2/bin/perl  -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
 use strict;
 use warnings;
 use OptArgs 'dispatch';
